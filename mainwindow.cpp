@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("Круги на форме");
+    resize(800, 600);
 }
 
 MainWindow::~MainWindow()
@@ -24,14 +26,34 @@ bool CCircle::contains(int x, int y) const {
 }
 
 void CCircle::draw(QPainter &painter) const {
-    if (selected_) {
-        painter.setPen(QPen(Qt::red, 2));
-        painter.setBrush(QBrush(QColor(255, 200, 200, 150))); // светло-красный
-    }
-    else {
-        painter.setPen(QPen(Qt::blue, 1));
-        painter.setBrush(QBrush(QColor(200, 200, 255, 150))); // светло-синий
-    }
+    painter.setPen(Qt::black);
+    painter.setBrush(Qt::blue);
 
     painter.drawEllipse(x_ - radius_, y_ - radius_, 2 * radius_, 2 * radius_);
 }
+
+void CircleContainer::~CircleContainer() {
+    for (auto circle : circles_) {
+        delete circle;
+    }
+    circles_.clear();
+}
+
+void CircleContainer::addCircle(CCircle *circle) {
+    if (circle) {
+        circles_.push_back(circle);
+    }
+}
+
+CCircle* CircleContainer::getCircle(int index) const {
+    if (index >= 0 && index < circles_.size()) {
+        return circles_[index];
+    }
+    return nullptr;
+}
+
+int CircleContainer::count() const {
+    return circles_.size();
+}
+
+
