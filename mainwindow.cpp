@@ -69,7 +69,7 @@ int CircleContainer::count() const {
     return circles_.size();
 }
 
-void clearSelection() {
+void CircleContainer::clearSelection() {
     for (auto circle : circles_) {
         circle->setSelected(false);
     }
