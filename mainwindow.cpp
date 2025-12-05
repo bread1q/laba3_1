@@ -90,21 +90,32 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         int x = event->pos().x();
         int y = event->pos().y();
-        bool clickedOnCircle = false;
 
-        container_.clearSelection();
+        bool clickedOnCircle = false;
 
         for (int i = 0; i < container_.count(); i++) {
             CCircle* circle = container_.getCircle(i);
             if (circle && circle->contains(x, y)) {
-                circle->setSelected(true);
                 clickedOnCircle = true;
+
+                if (ctrlPressed_) {
+                    circle->setSelected(!circle->getSelected());
+                } else {
+                    container_.clearSelection();
+                    circle->setSelected(true);
+                }
                 break;
             }
         }
 
         if (!clickedOnCircle) {
+            if (!ctrlPressed_) {
+                container_.clearSelection();
+            }
             CCircle* newCircle = new CCircle(x, y);
+            if (!ctrlPressed_) {
+                newCircle->setSelected(true);
+            }
             container_.addCircle(newCircle);
         }
 
@@ -112,4 +123,18 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     }
 
     QMainWindow::mousePressEvent(event);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Control) {
+        ctrlPressed_ = true;
+    }
+    QMainWindow::keyPressEvent(event);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Control) {
+        ctrlPressed_ = false;
+    }
+    QMainWindow::keyReleaseEvent(event);
 }
