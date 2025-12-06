@@ -102,25 +102,33 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
 
         bool clickedOnCircle = false;
 
+        std::vector<CCircle*> circlesUnderCursor;
+
         for (int i = 0; i < container_.count(); i++) {
             CCircle* circle = container_.getCircle(i);
             if (circle && circle->contains(x, y)) {
+                circlesUnderCursor.push_back(circle);
                 clickedOnCircle = true;
-
-                if (ctrlPressed_) {
-                    circle->setSelected(!circle->getSelected());
-                } else {
-                    container_.clearSelection();
-                    circle->setSelected(true);
-                }
-                break;
             }
         }
 
-        if (!clickedOnCircle) {
+        if (clickedOnCircle) {
+
+            if (ctrlPressed_) {
+                for (auto circle : circlesUnderCursor) {
+                    circle->setSelected(!circle->getSelected());
+                }
+            } else {
+                container_.clearSelection();
+                for (auto circle : circlesUnderCursor) {
+                    circle->setSelected(true);
+                }
+            }
+        } else {
             if (!ctrlPressed_) {
                 container_.clearSelection();
             }
+
             CCircle* newCircle = new CCircle(x, y);
             if (!ctrlPressed_) {
                 newCircle->setSelected(true);
@@ -152,4 +160,16 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         ctrlPressed_ = false;
     }
     QMainWindow::keyReleaseEvent(event);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    if (event->size().width() < 200 || event->size().height() < 150) {
+        resize(qMax(200, event->size().width()),
+               qMax(150, event->size().height()));
+        return;
+    }
+
+    update();
+
+    QMainWindow::resizeEvent(event);
 }
