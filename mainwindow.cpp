@@ -58,6 +58,15 @@ void CircleContainer::clear() {
     circles_.clear();
 }
 
+void CircleContainer::removeSelected() {
+    for (int i = circles_.size() - 1; i >= 0; i--) {
+        if (circles_[i]->getSelected()) {
+            delete circles_[i];
+            circles_.erase(circles_.begin() + i);
+        }
+    }
+}
+
 CCircle* CircleContainer::getCircle(int index) const {
     if (index >= 0 && index < circles_.size()) {
         return circles_[index];
@@ -129,6 +138,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Control) {
         ctrlPressed_ = true;
     }
+
+    else if (event->key() == Qt::Key_Backspace) {
+        container_.removeSelected();
+        update();
+    }
+
     QMainWindow::keyPressEvent(event);
 }
 
